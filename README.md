@@ -56,9 +56,9 @@ On macOS/Linux:
 
 ## Files
 
-   train_model.py: Script to train the emotion recognition model.
-   main.py: Combined script for webcam emotion detection.
-   fer2013.csv: The FER-2013 dataset containing images and labels (download separately).
+- train_model.py: Script to train the emotion recognition model.
+- main.py: Combined script for webcam emotion detection.
+- fer2013.csv: The FER-2013 dataset containing images and labels (download separately).
 
 ## How to Train the Model
 
