@@ -70,16 +70,16 @@ On macOS/Linux:
 
 ## Real-time Emotion Detection
 
-    To start real-time emotion detection using your webcam, run:
+   To start real-time emotion detection using your webcam, run:
 
     python main.py
 
-    This will open a webcam window showing live emotion predictions on the detected faces.
+   This will open a webcam window showing live emotion predictions on the detected faces.
 
 ## Exit the program
 
-    Press 'q' to exit the webcam window.
+   Press '*q*' to exit the webcam window.
 
 ## License
 
-    This project is licensed under the MIT License - see the LICENSE file for details.
+   This project is licensed under the MIT License - see the LICENSE file for details.
