@@ -41,11 +41,15 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
 model.summary()
 
 # Train
-model.fit(X_train, y_train, batch_size=64, epochs=20, validation_data=(X_test, y_test))
+model.fit(X_train, y_train, batch_size=64, epochs=1, validation_data=(X_test, y_test))
+
+# Evaluate model on test data
+test_loss, test_accuracy = model.evaluate(X_test, y_test, verbose=2)
+print(f"📊 Test Accuracy: {test_accuracy * 100:.2f}%")
 
 # Save model
 if not os.path.exists("model"):
     os.makedirs("model")
 
-model.save("model/emotion_model.h5")
-print("✅ Model saved to model/emotion_model.h5")
+model.save("model/emotion_model.keras")
+print("✅ Model saved to model/emotion_model.keras")
