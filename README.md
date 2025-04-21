@@ -56,30 +56,30 @@ On macOS/Linux:
 
 ## Files
 
-    train_model.py: Script to train the emotion recognition model.
-    main.py: Combined script for webcam emotion detection.
-    fer2013.csv: The FER-2013 dataset containing images and labels (download separately).
+- train_model.py: Script to train the emotion recognition model.
+- main.py: Combined script for webcam emotion detection.
+- fer2013.csv: The FER-2013 dataset containing images and labels (download separately).
 
 ## How to Train the Model
 
-    First, train the model by running:
+   First, train the model by running:
 
     python train_model.py
 
-    This script will train a Convolutional Neural Network (CNN) on the FER-2013 dataset and save the trained model as model/emotion_model.keras.
+   This script will train a Convolutional Neural Network (CNN) on the FER-2013 dataset and save the trained model as model/emotion_model.keras.
 
 ## Real-time Emotion Detection
 
-    To start real-time emotion detection using your webcam, run:
+   To start real-time emotion detection using your webcam, run:
 
     python main.py
 
-    This will open a webcam window showing live emotion predictions on the detected faces.
+   This will open a webcam window showing live emotion predictions on the detected faces.
 
 ## Exit the program
 
-    Press 'q' to exit the webcam window.
+   Press '*q*' to exit the webcam window.
 
 ## License
 
-    This project is licensed under the MIT License - see the LICENSE file for details.
+   This project is licensed under the MIT License - see the LICENSE file for details.
