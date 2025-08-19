@@ -5,3 +5,7 @@ matplotlib
 seaborn
 scikit-learn
 opencv-python
+fastapi
+uvicorn
+python-multipart
+Pillow
