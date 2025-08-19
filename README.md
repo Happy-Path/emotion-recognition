@@ -38,7 +38,8 @@ Before you run the project, make sure you have the following installed:
 
 2. Create and activate a virtual environment:
 
-    python -m venv venv
+   ```bash
+   python -m venv venv
 
 On Windows:
 
@@ -50,7 +51,8 @@ On macOS/Linux:
 
 3. Install the dependencies:
 
-    pip install -r requirements.txt
+   ```bash
+   pip install -r requirements.txt
 
 4. Download the FER-2013 dataset (fer2013.csv) and place it in the project directory. The dataset can be obtained from [this link](https://www.kaggle.com/datasets/nicolejyt/facialexpressionrecognition).
 
