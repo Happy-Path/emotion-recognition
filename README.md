@@ -78,6 +78,14 @@ On macOS/Linux:
 
    This will open a webcam window showing live emotion predictions on the detected faces.
 
+## Run with FastAPI
+
+   If you want to run the app with FastAPI (for API or web interface usage), use:
+
+    uvicorn app:app --reload --port 8000
+
+This will start a local server at http://127.0.0.1:8000 
+
 ## Exit the program
 
    Press '*q*' to exit the webcam window.
