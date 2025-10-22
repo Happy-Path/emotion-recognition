@@ -7,6 +7,17 @@ import cv2
 import os
 from typing import List, Dict
 import uvicorn
+import base64, io, time
+from PIL import Image
+from pydantic import BaseModel
+from typing import Optional, Dict, Any
+
+class InferRequest(BaseModel):
+    sessionId: Optional[str] = None
+    frameBase64: str
+    clientTs: Optional[int] = None
+    features: Optional[Dict[str, Any]] = None
+
 
 app = FastAPI(title="Emotion Recognition API", version="1.0.0")
 
@@ -22,6 +33,8 @@ app.add_middleware(
 # Global variables
 model = None
 emotions = ["Angry", "Disgust", "Fear", "Happy", "Sad", "Surprise", "Neutral"]
+emotions_lower = ["angry", "disgust", "fear", "happy", "sad", "surprise", "neutral"]
+
 face_classifier = None
 
 @app.on_event("startup")
@@ -47,6 +60,50 @@ def preprocess_face(face_img):
     face_img = img_to_array(face_img)
     face_img = np.expand_dims(face_img, axis=0)
     return face_img
+
+def preprocess_base64_face(frame_b64: str) -> np.ndarray:
+    """
+    Decode a base64 data URL (e.g., 'data:image/jpeg;base64,...'),
+    convert to 48x48 grayscale (FER2013 style), scale to [0,1],
+    and return a (1,48,48,1) tensor.
+    """
+    if "," in frame_b64:
+        _, b64 = frame_b64.split(",", 1)
+    else:
+        b64 = frame_b64
+    img = Image.open(io.BytesIO(base64.b64decode(b64))).convert("L").resize((48, 48))
+    arr = img_to_array(img).astype("float32") / 255.0  # shape (48,48,1)
+    arr = np.expand_dims(arr, axis=0)                  # shape (1,48,48,1)
+    return arr
+
+def predict_emotion_from_array(x: np.ndarray):
+    """
+    Use the already-loaded global `model` to predict.
+    Returns (label_lower, scores_dict_lower).
+    """
+    global model
+    preds = model.predict(x, verbose=0)[0]  # shape (7,)
+    idx = int(np.argmax(preds))
+    label_lower = emotions_lower[idx]
+    # build lower-case scores dict
+    scores = { emotions_lower[i]: float(preds[i]) for i in range(len(emotions_lower)) }
+    return label_lower, scores
+
+def compute_attention(signals: Optional[Dict[str, Any]] = None):
+    """
+    Placeholder attention score. You can enrich this later with:
+    - gaze vector on-screen
+    - head pose thresholds
+    - inactivity/dwell time
+    """
+    score = 0.72
+    if signals:
+        if signals.get("gazeOnScreen") is True:
+            score += 0.1
+        if signals.get("blink") is False:
+            score += 0.05
+    return max(0.0, min(1.0, score)), {"gazeOnScreen": bool(signals.get("gazeOnScreen")) if signals else True}
+
 
 @app.post("/predict-emotion/")
 async def predict_emotion(file: UploadFile = File(...)):
@@ -162,6 +219,36 @@ async def predict_emotion_simple(file: UploadFile = File(...)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing image: {str(e)}")
+
+@app.post("/infer")
+async def infer(req: InferRequest):
+    """
+    Accepts a JSON body with base64 frame (data URL) and optional features.
+    Returns emotion label+scores and a simple attention score.
+    """
+    try:
+        if model is None:
+            raise HTTPException(status_code=503, detail="Model not loaded")
+
+        # Decode + preprocess single frame to FER2013 format
+        x = preprocess_base64_face(req.frameBase64)
+
+        # Emotion prediction (lower-case label and scores)
+        label_lower, scores = predict_emotion_from_array(x)
+
+        # Attention (placeholder)
+        att_score, att_signals = compute_attention(req.features)
+
+        return {
+            "emotion": {"label": label_lower, "scores": scores},
+            "attention": {"score": att_score, "signals": att_signals},
+            "serverTs": int(time.time() * 1000)
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error in /infer: {str(e)}")
+
 
 @app.get("/")
 async def root():
